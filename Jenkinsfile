@@ -1,10 +1,6 @@
 pipeline {
   agent any
 
-  environment {
-    GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-sa-json')
-  }
-
   stages {
     stage('Checkout Code') {
       steps {
@@ -14,24 +10,39 @@ pipeline {
 
     stage('Terraform Init') {
       steps {
-        dir('terraform') {
-          sh 'terraform init'
+        withCredentials([file(credentialsId: 'gcp-sa-json', variable: 'GOOGLE_CRED')]) {
+          dir('terraform') {
+            sh '''
+              export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_CRED
+              terraform init
+            '''
+          }
         }
       }
     }
 
     stage('Terraform Validate') {
       steps {
-        dir('terraform') {
-          sh 'terraform validate'
+        withCredentials([file(credentialsId: 'gcp-sa-json', variable: 'GOOGLE_CRED')]) {
+          dir('terraform') {
+            sh '''
+              export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_CRED
+              terraform validate
+            '''
+          }
         }
       }
     }
 
     stage('Terraform Plan') {
       steps {
-        dir('terraform') {
-          sh 'terraform plan -lock=false'
+        withCredentials([file(credentialsId: 'gcp-sa-json', variable: 'GOOGLE_CRED')]) {
+          dir('terraform') {
+            sh '''
+              export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_CRED
+              terraform plan -lock=false
+            '''
+          }
         }
       }
     }
