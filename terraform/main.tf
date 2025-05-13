@@ -27,6 +27,8 @@ resource "google_compute_instance" "jenkins_vm" {
 resource "google_container_cluster" "gke_cluster" {
   name     = "hello-cluster"
   location = var.zone
+  deletion_protection = false  # ← Add this line here
+
 
   initial_node_count = 2
 
