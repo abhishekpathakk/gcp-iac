@@ -23,3 +23,18 @@ resource "google_compute_instance" "jenkins_vm" {
   metadata_startup_script = file("../scripts/bootstrap_jenkins.sh")
   tags = ["jenkins"]
 }
+
+resource "google_container_cluster" "gke_cluster" {
+  name     = "hello-cluster"
+  location = var.zone
+
+  initial_node_count = 2
+
+  node_config {
+    machine_type = "e2-medium"
+
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform",
+    ]
+  }
+}
