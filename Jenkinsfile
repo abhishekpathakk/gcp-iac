@@ -1,4 +1,3 @@
-# Jenkinsfile (CI/CD pipeline for Terraform on GCP)
 pipeline {
   agent any
 
