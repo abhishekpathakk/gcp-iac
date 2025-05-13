@@ -59,6 +59,23 @@ pipeline {
       }
     }
 
+    stage('Terraform Apply') {
+      steps {
+        withCredentials([file(credentialsId: 'gcp-sa-json', variable: 'GOOGLE_CRED')]) {
+          dir('terraform') {
+            sh """
+              export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_CRED
+              terraform apply -auto-approve \
+                -var='credentials_path=$GOOGLE_CRED' \
+                -var='project=${PROJECT_ID}' \
+                -var='region=${REGION}' \
+                -var='zone=${ZONE}'
+            """
+          }
+        }
+      }
+    }
+
     stage('Docker Build & Push') {
       steps {
         withCredentials([file(credentialsId: 'gcp-sa-json', variable: 'GOOGLE_CRED')]) {
